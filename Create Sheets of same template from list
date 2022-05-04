@@ -1,0 +1,21 @@
+Sub Maybe()
+Dim xSheet As Worksheet
+Dim i As Integer, n As Integer
+
+Set xSheet = Sheet7 'change sheet name where the list is present
+n = xSheet.Range("B1").Value
+           
+     For i = 2 To n
+    
+     With ActiveWorkbook
+     .Sheets("Key_Stats").Copy After:=.Sheets(Sheets.Count) 'change the source tab name as per your file
+     .Sheets(Sheets.Count).Name = xSheet.Range(Cells(i, 2).Address).Value
+     End With
+     
+     ActiveSheet.Range("F9").Value = Sheet7.Range("C" & i).Value 'left part is for copied sheet and right part is your list cell
+     
+     Next i
+     xSheet.Select
+     xSheet.Range("A1").Select
+     
+End Sub
