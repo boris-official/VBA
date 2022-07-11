@@ -1,0 +1,13 @@
+Sub ListAllSheets()
+
+Dim ws As Worksheet
+Dim Counter As Integer
+
+Counter = 0
+
+For Each ws In ActiveWorkbook.Worksheets
+    ActiveCell.Offset(Counter, 0).Value = ws.Name
+    Counter = Counter + 1
+Next ws
+
+End Sub
