@@ -1,0 +1,89 @@
+Sub Customer()
+
+Dim InSht, xSheet As Worksheet
+Dim i, lc, x, y As Integer
+Dim xCell As Range
+
+        If Sheet1.Range("C2").Value = "Customers" Then
+            Set xSheet = Sheet2
+        ElseIf Sheet1.Range("C2").Value = "Suppliers" Then
+            Set xSheet = Sheet3
+        ElseIf Sheet1.Range("C2").Value = "Auditor" Then
+            Set xSheet = Sheet5
+        Else: Set xSheet = Sheet4
+        End If
+
+Set InSht = Sheet1
+lc = InSht.Range("BR1").Value
+y = xSheet.Range("AE1").Value
+Set xCell = xSheet.Range("A2")
+
+'Breaching!
+xSheet.Range("A2:M" & Rows.Count).Clear
+
+	For i = 1 To InSht.Range("C1").Value
+		InSht.Range("BM2") = InSht.Range("A" & i + 1)
+		InSht.Select
+		InSht.Range("BM4:BO4").Select
+		Application.CommandBars.FindControl(Tag:="menurefreshdatacell").Execute
+		InSht.Range("A1").Select
+		
+		For x = 4 To lc
+		xSheet.Select
+			xSheet.Range("S1") = Sheet1.Range(Cells(x, 70).Address)
+			
+			'Breaching!
+			xSheet.Range("S6:AE" & Rows.Count).Clear
+			
+			'Refreshing
+			xSheet.Range("W4").Select
+			Application.CommandBars.FindControl(Tag:="menurefreshdatacell").Execute
+			xSheet.Range("AA4:AB4").Select
+			Application.CommandBars.FindControl(Tag:="menurefreshdatacell").Execute
+			xSheet.Range("AE4").Select
+			Application.CommandBars.FindControl(Tag:="menurefreshdatacell").Execute
+			
+			'Copy paste
+			y = xSheet.Range("AE1").Value
+			If xSheet.Range("AE1").Value <> 5 Then
+			
+			xSheet.Range("S5:V5").Copy
+			With xSheet.Range("S6:V" & y)
+					.PasteSpecial xlPasteAll
+					.Copy
+					.PasteSpecial xlPasteValues
+			End With
+			Application.CutCopyMode = False
+			
+			xSheet.Range("X5:Z5").Copy
+			With xSheet.Range("X6:Z" & y)
+					.PasteSpecial xlPasteAll
+					.Copy
+					.PasteSpecial xlPasteValues
+			End With
+			Application.CutCopyMode = False
+			 
+			xSheet.Range("AC5:AD5").Copy
+			With xSheet.Range("AC6:AD" & y)
+					.PasteSpecial xlPasteAll
+					.Copy
+					.PasteSpecial xlPasteValues
+			End With
+			Application.CutCopyMode = False
+			End If
+			
+			'Copying output
+			xSheet.Range("S5:AE" & y).Copy
+			With xSheet.Range(xCell.Address & ":M" & xCell.Row + y - 5)
+					.PasteSpecial xlPasteFormats
+					.PasteSpecial xlPasteValuesAndNumberFormats
+			End With
+			Application.CutCopyMode = False
+			
+			Set xCell = xSheet.Range("A" & xSheet.Range("A" & Rows.Count).End(xlUp).Row + 1)
+								  
+		Next x
+
+	Next i
+
+End Sub
