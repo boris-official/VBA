@@ -1,0 +1,2 @@
+Application.Wait (Now + TimeValue("0:00:10"))
+'this will pause the macro for 10 seconds
