@@ -1,0 +1,85 @@
+'use this line in loop to display the progressbar - 
+      
+     Dim Progress As New ProgressBar
+     Progress.Update i, 3, "Please wait", "", True
+     
+
+'class starts from here------------
+Private statusBarState As Boolean
+Private enableEventsState As Boolean
+Private screenUpdatingState As Boolean
+Private Const NUM_BARS As Integer = 50
+Private Const MAX_LENGTH As Integer = 255
+Private CharBar As String
+Private CharSpace As String
+Private CharStart As String
+Private CharEnd As String
+
+Private Sub Class_Initialize()
+    ' Save the state of the variables to change
+    statusBarState = Application.DisplayStatusBar
+    enableEventsState = Application.EnableEvents
+    screenUpdatingState = Application.ScreenUpdating
+    ' set the progress bar chars (should be equal size)
+    CharBar = ChrW(9608)
+    CharSpace = ChrW(9617) 'ChrW(12288)
+    CharStart = ChrW(9621)
+    CharEnd = ChrW(9615)
+
+    ' Set the desired state
+    Application.DisplayStatusBar = True
+'    Application.ScreenUpdating = False
+'    Application.EnableEvents = False
+End Sub
+
+Private Sub Class_Terminate()
+    ' Restore settings
+    Application.DisplayStatusBar = statusBarState
+    Application.ScreenUpdating = screenUpdatingState
+    Application.EnableEvents = enableEventsState
+    Application.StatusBar = False
+End Sub
+
+Public Function Update(ByVal Value As Long, _
+                  Optional ByVal MaxValue As Long = 0, _
+                  Optional ByVal Status As String = "", _
+                  Optional ByVal StatusEnd As String = "", _
+                  Optional ByVal DisplayPercent As Boolean = True) As String
+
+    ' Value          : 0 to 100 (if no max is set)
+    ' Value          : >=0 (if max is set)
+    ' MaxValue       : >= 0
+    ' Status         : optional message to display for user
+    ' DisplayPercent : Display the percent complete after the status bar
+
+    ' <Status> <Progress Bar> <Percent Complete>
+
+    ' Validate entries
+    If Value < 0 Or MaxValue < 0 Or (Value > 100 And MaxValue = 0) Then Exit Function
+
+    ' If the maximum is set then adjust value to be in the range 0 to 100
+    If MaxValue > 0 Then Value = WorksheetFunction.RoundUp((Value * 100) / MaxValue, 0)
+
+    ' Message to set the status bar to
+    Dim Display As String
+    Display = Status & "  " & CharStart
+
+    ' Set bars
+    Display = Display & String(Int(Value / (100 / NUM_BARS)), CharBar)
+    ' set spaces
+    Display = Display & String(NUM_BARS - Int(Value / (100 / NUM_BARS)), CharSpace)
+
+    ' Closing character to show end of the bar
+    Display = Display & CharEnd
+
+    If DisplayPercent = True Then Display = Display & "  (" & Value & "%)  "
+
+    Display = Display & "  " & StatusEnd
+
+    ' chop off to the maximum length if necessary
+    If Len(Display) > MAX_LENGTH Then Display = Right(Display, MAX_LENGTH)
+
+    Update = Display
+    Application.StatusBar = Display
+End Function
+
