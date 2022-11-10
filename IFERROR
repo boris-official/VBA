@@ -1,0 +1,21 @@
+Sub MyFixFormulas()
+
+    Dim myRange As Range
+    Dim cell As Range
+    
+'   Set range to apply this to
+    Set myRange = Range("C8:H427")
+
+    Application.ScreenUpdating = True
+
+'   Loop through range
+    For Each cell In myRange
+'       Check to see if formul (and not already if error)
+        If Left(cell.Formula, 4) = "=SUM" And Left(cell.Formula, 8) <> "=IFERROR" Then
+            cell.Formula = "=IFERROR(" & Mid(cell.Formula, 2, Len(cell.Formula) - 1) & ",0)"
+        End If
+    Next cell
+    
+    Application.ScreenUpdating = True
+    
+End Sub
