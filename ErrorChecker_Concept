@@ -1,0 +1,76 @@
+Sub ErrorCheck()
+Dim wSh As Worksheet
+Dim foundCells As Range
+Dim i, n, x As Integer
+
+Application.DisplayAlerts = False
+
+On Error GoTo ErrHandler
+On Error Resume Next
+ErrHandler: Sheets("ErrorChecks").Delete
+Sheets.Add.Name = "ErrorChecks"
+
+Application.DisplayAlerts = True
+
+n = 1
+For Each wSh In ThisWorkbook.Worksheets
+    Set foundCells = FindAll(wSh.UsedRange, "#N/A")
+    Sheets("ErrorChecks").Range(Cells(2, 1).Offset(-1, 0).Address).Value = "#N/A check"
+    Sheets("ErrorChecks").Range(Cells(2, n).Address).Value = wSh.Name
+
+    If Not foundCells Is Nothing Then
+        Dim cell As Range
+        i = 1
+        For Each cell In foundCells
+        Sheets("ErrorChecks").Range(Cells(2, n).Offset(i, 0).Address).Value = cell.Address
+        i = i + 1
+        Next
+    End If
+    n = n + 1
+Next
+x = 0
+
+Sheets("ErrorChecks").Range(Cells(n, 1).Offset(3, 0).Address).Value = "#REF check"
+For Each wSh In ThisWorkbook.Worksheets
+    Set foundCells = FindAll(wSh.UsedRange, "#REF")
+   
+    Sheets("ErrorChecks").Range(Cells(n, 1).Offset(4, x).Address).Value = wSh.Name
+
+    If Not foundCells Is Nothing Then
+        i = 0
+        For Each cell In foundCells
+        Sheets("ErrorChecks").Range(Cells(n + i, 1).Offset(n + 1, x).Address).Value = cell.Address
+        i = i + 1
+        Next
+    End If
+    x = x + 1
+Next
+End Sub
+
+Function FindAll(ByVal rng As Range, ByVal searchTxt As String) As Range
+    Dim foundCell As Range
+    Dim firstAddress
+    Dim rResult As Range
+    With rng
+        Set foundCell = .Find(What:=searchTxt, _
+                              After:=.Cells(.Cells.Count), _
+                              LookIn:=xlFormulas, _
+                              LookAt:=xlPart, _
+                              SearchOrder:=xlByRows, _
+                              SearchDirection:=xlNext, _
+                              MatchCase:=False)
+        If Not foundCell Is Nothing Then
+            firstAddress = foundCell.Address
+            Do
+                If rResult Is Nothing Then
+                    Set rResult = foundCell
+                Else
+                    Set rResult = Union(rResult, foundCell)
+                End If
+                Set foundCell = .FindNext(foundCell)
+            Loop While Not foundCell Is Nothing And foundCell.Address <> firstAddress
+        End If
+    End With
+
+    Set FindAll = rResult
+End Function
