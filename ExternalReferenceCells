@@ -1,0 +1,91 @@
+Sub Cells_With_Links()
+  linksDataArray = ActiveWorkbook.LinkSources(xlExcelLinks)
+  Dim reportHeaders() As String
+  Dim rangeCur As Range
+  Dim sheetCur As Worksheet
+  Dim rowNo As Integer
+  Dim linkFilePath, linkFilePath2, linkFileName As String
+  Dim linksStatusDescr() As String  'https://docs.microsoft.com/en-us/office/vba/api/excel.xllinkstatus
+  Dim sheetReportName As String
+
+  sheetReportName = "All Links report"
+  linksStatusDescr = Split("No errors/File missing/Sheet missing/Status may be out of date/Not yet calculated/Unable to determine status/Not started/Invalid name/Not open/Source document is open/Copied values", "/")
+  reportHeaders = Split("Worksheet,Cell,Formula,Workbook,Link Status", ",")
+
+  rowNo = 1 'Header row
+
+  If Not IsEmpty(linksDataArray) Then
+   Application.ScreenUpdating = False
+   Application.Calculation = xlCalculationManual
+
+   If Evaluate("ISREF('" & sheetReportName & "'!A1)") Then
+    ActiveWorkbook.Worksheets(sheetReportName).Cells.Clear
+   Else
+    Sheets.Add.Name = sheetReportName
+   End If
+   Set sheetReport = ActiveWorkbook.Worksheets(sheetReportName)
+
+   For indI = 0 To UBound(reportHeaders)
+    sheetReport.Cells(rowNo, indI + 1) = reportHeaders(indI)
+   Next
+
+   For Each sheetCur In ActiveWorkbook.Worksheets
+    If sheetCur.Name <> sheetReport.Name Then
+     For Each rangeCur In sheetCur.UsedRange
+      If rangeCur.HasFormula Then
+       For indI = LBound(linksDataArray) To UBound(linksDataArray)
+        linkFilePath = linksDataArray(indI)   'LinkSrouces returns the full file path with the file name
+        linkFileName = Right(linkFilePath, Len(linkFilePath) - InStrRev(linkFilePath, "\"))   'extract only the file name
+        linkFilePath2 = Left(linksDataArray(indI), InStrRev(linksDataArray(indI), "\")) & "[" & linkFileName & "]"  'the file path with the workbook name in square brackets
+
+        If InStr(rangeCur.Formula, linkFilePath) Or InStr(rangeCur.Formula, linkFilePath2) Then
+         rowNo = rowNo + 1
+         With sheetReport
+          .Cells(rowNo, 1) = sheetCur.Name
+          .Cells(rowNo, 2) = Replace(rangeCur.Address, "$", "")
+          .Hyperlinks.Add Anchor:=.Cells(rowNo, 2), Address:="", SubAddress:="'" & sheetCur.Name & "'!" & rangeCur.Address
+          .Cells(rowNo, 3) = "'" & rangeCur.Formula
+          .Cells(rowNo, 4) = linkFilePath
+          .Cells(rowNo, 5) = linksStatusDescr(ActiveWorkbook.LinkInfo(CStr(linkFilePath), xlLinkInfoStatus))
+         End With
+         Exit For
+        End If
+       Next indI
+
+       For Each namedrangeCur In Names
+          If InStr(rangeCur.Formula, namedrangeCur.Name) Then
+         rowNo = rowNo + 1
+         linkFilePath = ""
+
+         If 0 < InStr(namedrangeCur.RefersTo, "[") Then
+          linkFilePath = Replace(Split(Right(namedrangeCur.RefersTo, Len(namedrangeCur.RefersTo) - 2), "]")(0), "[", "")
+         End If
+
+           With sheetReport
+            .Cells(rowNo, 1) = sheetCur.Name
+            .Cells(rowNo, 2) = Replace(rangeCur.Address, "$", "")
+            .Hyperlinks.Add Anchor:=.Cells(rowNo, 2), Address:="", SubAddress:="'" & sheetCur.Name & "'!" & rangeCur.Address
+            .Cells(rowNo, 3) = "'" & rangeCur.Formula
+            If 0 < Len(linkFilePath) Then
+           .Cells(rowNo, 4) = linkFilePath
+            .Cells(rowNo, 5) = "'" & ActiveWorkbook.LinkInfo(CStr(linkFilePath), xlLinkInfoStatus)
+            Else
+           .Cells(rowNo, 4) = "Unknown"
+           .Cells(rowNo, 5) = "Unknown"
+            End If
+           End With
+           Exit For
+        End If
+       Next namedrangeCur
+      End If
+     Next rangeCur
+    End If
+   Next
+   Columns("A:E").EntireColumn.AutoFit
+
+   Application.ScreenUpdating = True
+   Application.Calculation = xlCalculationAutomatic
+  Else
+   MsgBox "No external links"
+  End If
+End Sub
