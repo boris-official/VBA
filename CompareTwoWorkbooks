@@ -1,0 +1,37 @@
+Sub CompareWorkbooks()
+    Dim wb1 As Workbook, wb2 As Workbook, wb3 As Workbook
+    Dim sht1 As Worksheet, sht2 As Worksheet, sht3 As Worksheet
+    Dim i As Long, j As Long, k As Long
+    Dim maxRows As Long, maxCols As Long
+    Dim cell1 As Range, cell2 As Range, cell3 As Range
+
+    Set wb1 = Workbooks.Open("C:\Workbook1.xlsx")
+    Set wb2 = Workbooks.Open("C:\Workbook2.xlsx")
+    Set wb3 = Workbooks.Add
+    Set sht1 = wb1.Sheets(1)
+    Set sht2 = wb2.Sheets(1)
+    Set sht3 = wb3.Sheets(1)
+
+    sht3.Name = "Differences"
+
+    maxRows = Application.Max(sht1.UsedRange.Rows.Count, sht2.UsedRange.Rows.Count)
+    maxCols = Application.Max(sht1.UsedRange.Columns.Count, sht2.UsedRange.Columns.Count)
+
+    For i = 1 To maxRows
+        For j = 1 To maxCols
+            Set cell1 = sht1.Cells(i, j)
+            Set cell2 = sht2.Cells(i, j)
+            Set cell3 = sht3.Cells(i, j)
+            If cell1.Value <> cell2.Value Then
+                cell3.Value = "Difference: " & cell1.Value & " vs " & cell2.Value
+            Else
+                cell3.Value = ""
+            End If
+        Next j
+    Next i
+
+    wb3.SaveAs "C:\Differences.xlsx"
+    wb1.Close
+    wb2.Close
+    wb3.Close
+End Sub
