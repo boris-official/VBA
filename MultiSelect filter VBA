@@ -1,0 +1,34 @@
+Sub Example()
+    Dim arr() As String
+    Dim i As Integer
+    
+    ReDim arr(1 To 5)
+    For i = 1 To 5
+        arr(i) = Range("A" & i).Value
+    Next i
+    
+    Sheet5.Range("B18:F400").AutoFilter Field:=3, Criteria1:=arr, Operator:=xlFilterValues
+End Sub
+
+'Create new stupid LISTBOX and add this code, replace Selection_KD with results range.
+
+Sub ListBox1_Change()
+Application.Calculation = xlCalculationManual
+
+'Derive selections from List Box 2
+Dim n As Integer, column As String
+On Error Resume Next
+
+Sheet10.Range("Selection_KD").ClearContents
+column = Sheet10.Range("Selection_KD").End(xlDown).Address
+With Sheet5.Shapes("List Box 1").OLEFormat.Object
+    For n = 1 To .ListCount
+        If .Selected(n) Then
+            Sheet10.Range(column).End(xlUp)(2, 1) = .List(n)
+        End If
+    Next n
+End With
+
+Application.Calculation = xlCalculationAutomatic
+Call Example
+End Sub
