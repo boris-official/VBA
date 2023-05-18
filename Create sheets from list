@@ -1,0 +1,36 @@
+Sub CreateSheetsFromList()
+    Dim wsList As Worksheet
+    Dim newSheet As Worksheet
+    Dim sheetName As Range
+    
+    ' Set the worksheet that contains the list of sheet names
+    Set wsList = ThisWorkbook.Sheets("Sheet1") ' Replace "Sheet1" with the actual name of your worksheet
+    
+    ' Loop through each cell in column A of the list
+    For Each sheetName In wsList.Range("K9:K36")
+        ' Check if the sheet name is not empty
+        If sheetName.Value <> "" Then
+            ' Check if a sheet with the same name already exists
+            If SheetExists(sheetName.Value) = False Then
+                ' Create a new sheet with the name from the list
+                Set newSheet = ThisWorkbook.Sheets.Add(After:=ThisWorkbook.Sheets(ThisWorkbook.Sheets.Count))
+                newSheet.Name = sheetName.Value
+            End If
+        End If
+    Next sheetName
+    
+    MsgBox "Sheets created successfully!"
+End Sub
+
+Function SheetExists(sheetName As String) As Boolean
+    Dim ws As Worksheet
+    
+    SheetExists = False
+    For Each ws In ThisWorkbook.Sheets
+        If ws.Name = sheetName Then
+            SheetExists = True
+            Exit Function
+        End If
+    Next ws
+End Function
+
