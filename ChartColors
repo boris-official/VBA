@@ -1,0 +1,27 @@
+Sub ApplySequentialRGBCustomColorsToChart()
+    Dim ws As Worksheet
+    Dim chtObj As ChartObject
+    Dim cht As Chart
+    Dim rgbColors As Variant
+    Dim seriesCount As Integer
+    Dim colorIndex As Integer
+
+    ' Define your list of RGB colors here
+    rgbColors = Array(Array(250, 184, 26), Array(91, 94, 94), Array(0, 135, 148), Array(156, 59, 51), _
+                      Array(61, 109, 172), Array(230, 129, 54), Array(105, 117, 46), Array(75, 63, 87), _
+                      Array(166, 128, 41), Array(97, 186, 195), Array(223, 98, 87), Array(135, 135, 135), _
+                      Array(228, 188, 94), Array(91, 71, 112), Array(89, 136, 116), Array(80, 162, 210), _
+                      Array(226, 215, 55), Array(181, 44, 79), Array(146, 172, 84), Array(126, 105, 176))
+
+    Set ws = ThisWorkbook.Worksheets("Sheet1") ' Change "Sheet1" to the name of your sheet
+    Set chtObj = ws.ChartObjects("Chart1") ' Change "Chart1" to the name of your chart object
+    Set cht = chtObj.Chart
+
+    ' Get the number of series in the chart
+    seriesCount = cht.SeriesCollection.Count
+
+    ' Loop through each series and apply the RGB color
+    For colorIndex = 1 To seriesCount
+        cht.SeriesCollection(colorIndex).Format.Fill.ForeColor.RGB = RGB(rgbColors(colorIndex - 1)(0), rgbColors(colorIndex - 1)(1), rgbColors(colorIndex - 1)(2))
+    Next colorIndex
+End Sub
