@@ -1,0 +1,18 @@
+Sub SetDynamicPrintAreaWithExceptions()
+    Dim ws As Worksheet
+    Dim printArea As Range
+    Dim lastRow As Long, lastCol As Long
+    
+    For Each ws In ThisWorkbook.Worksheets
+        If ws.Name <> "SheetName1" And ws.Name <> "SheetName2" Then
+            lastRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
+            lastCol = ws.Cells(1, ws.Columns.Count).End(xlToLeft).Column
+            
+            Set printArea = ws.Range(ws.Cells(1, 1), ws.Cells(lastRow, lastCol))
+            ws.PageSetup.PrintArea = printArea.Address
+        End If
+    Next ws
+End Sub
+
+'Replace ws.name with ws.code if you wish to use Sheet code instead of name
+'call this and then move to printing part
