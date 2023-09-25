@@ -1,8 +1,10 @@
 Sub HideBlankRows()
 Dim val As Range
+Columns.EntireColumn.Hidden = False
+Rows.EntireRow.Hidden = False
 For Each val In Range("B4:H13").Cells
-If val .Value = "" Then
-    val .EntireRow.Hidden = True
+If val.Value = "" Then
+    val.EntireRow.Hidden = True
 End If
 Next
 End Sub
