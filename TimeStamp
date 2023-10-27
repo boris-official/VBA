@@ -1,0 +1,25 @@
+Sub CalculateRunTime()
+
+Dim StartTime As Double
+Dim SecondsElapsed As Double
+
+'Remember time when macro starts
+    StartTime = Timer
+
+''Insert Your Code Here...
+'*****************************
+    Application.Wait Now + TimeValue("00:00:03")
+    
+    
+    
+    
+    
+    
+'Determine how many seconds code took to run
+    SecondsElapsed = Round((Timer - StartTime) / 60, 2)
+
+'Notify user in seconds
+    Range("C3").ClearContents
+    Range("C3").Value = SecondsElapsed
+
+End Sub
