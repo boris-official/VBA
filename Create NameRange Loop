@@ -1,0 +1,7 @@
+Sub BBBDKKGI()
+
+For Each cell In Range("U16:U29")
+    i = i + 1
+    cell.Name = "LOB_" & i
+Next
+End Sub
