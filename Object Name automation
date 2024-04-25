@@ -1,0 +1,11 @@
+Sub Text_Replacement()
+Dim i, x As Integer
+Dim rng As Range
+
+i = 50 + 1
+For Each rng In Range("C10:C25")
+Sheet1.Shapes("Option Button " & i).TextFrame.Characters.Text = rng.Value
+i = i + 1
+Next rng
+
+End Sub
