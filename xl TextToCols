@@ -1,0 +1,10 @@
+'Limited to 5 for now
+
+=LEFT(D4,SEARCH(",",D4)-1)
+=MID(D4,SEARCH(",",D4)+1,SEARCH(",",D4,SEARCH(",",D4)+1)-SEARCH(",",D4)-1)
+=MID(D4,SEARCH(",",D4,SEARCH(",",D4)+1)+1,SEARCH(",",D4,SEARCH(",",D4,SEARCH(",",D4)+1)+1)-SEARCH(",",D4,SEARCH(",",D4)+1)-1)
+=MID(D4,SEARCH(",",D4,SEARCH(",",D4,SEARCH(",",D4)+1)+1)+1,LEN(D4)-SEARCH(",",D4,SEARCH(",",D4,SEARCH(",",D4)+1)+1))
+
+
+Delimiter = ","
+Text =  "D4"
