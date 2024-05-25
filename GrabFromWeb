@@ -1,0 +1,43 @@
+Sub ExtractTitleAttributesFromFile()
+    Dim html As New HTMLDocument
+    Dim elements As IHTMLElementCollection
+    Dim element As IHTMLElement
+    Dim titleValues As Collection
+    Dim filePath As String
+    Dim fileContent As String
+    Dim fileNum As Integer
+    Dim i As Integer
+    
+    ' Set the path to your local HTML file
+    filePath = "C:\Users\nitesh_chauhan\Downloads\Edge Downloads\CIQ Pro_ Office Screener _ Application.html"
+    
+    ' Read the content of the HTML file
+    fileNum = FreeFile
+    Open filePath For Input As #fileNum
+    fileContent = Input$(LOF(fileNum), fileNum)
+    Close #fileNum
+    
+    ' Load the HTML content into the HTMLDocument object
+    html.body.innerHTML = fileContent
+    
+    ' Initialize the collection to store title attribute values
+    Set titleValues = New Collection
+    
+    ' Get all elements in the document
+    Set elements = html.getElementsByTagName("*")
+    
+    ' Loop through each element to find those with a title attribute
+    For Each element In elements
+        If element.hasAttribute("title") Then
+            titleValues.Add element.getAttribute("title")
+        End If
+    Next element
+    
+    Set ws = ThisWorkbook.Sheets(1)
+    
+    ' Output the collected title values
+    For i = 1 To titleValues.Count
+        ws.Cells(i, 1).Value = titleValues(i)
+    Next i
+End Sub
+
