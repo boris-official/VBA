@@ -19,3 +19,6 @@ n = xSheet.Range("B1").Value
      xSheet.Range("A1").Select
      
 End Sub
+
+'use this line to rename the newly copied sheet in case if you are not using the list functionality
+.ActiveSheet.Name = "Entity_" & i + 4 
