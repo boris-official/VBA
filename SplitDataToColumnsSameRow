@@ -1,0 +1,67 @@
+Sub SplitDataToColumnsSameRow()
+    Dim lastRow As Long
+    Dim i As Long
+    Dim data As String
+    Dim companyName As String
+    Dim adviserRole As String
+    Dim partyAdvised As String
+    Dim colIndex As Long
+    Dim tempArray() As String
+    
+    ' Define the starting column to output (Column B = 2)
+    colIndex = 2
+    
+    ' Find the last row with data in column A
+    lastRow = Cells(Rows.Count, 1).End(xlUp).Row
+    
+    ' Loop through each row in column A
+    For i = 2 To lastRow
+        ' Get the data in the current row
+        data = Cells(i, 1).Value
+        
+        ' Split the data based on line breaks
+        tempArray = Split(data, vbLf)
+        
+        ' Initialize temporary variables to store values for each segment
+        companyName = ""
+        adviserRole = ""
+        partyAdvised = ""
+        
+        ' Loop through each segment in the array
+        For j = LBound(tempArray) To UBound(tempArray)
+            ' Clean up any extra spaces
+            tempArray(j) = Trim(tempArray(j))
+            
+            ' Check for the "Adviser Role" and "Party Advised" labels
+            If InStr(tempArray(j), "Adviser Role:") > 0 Then
+                adviserRole = Mid(tempArray(j), InStr(tempArray(j), "Adviser Role:") + Len("Adviser Role:"))
+            ElseIf InStr(tempArray(j), "Party Advised:") > 0 Then
+                partyAdvised = Mid(tempArray(j), InStr(tempArray(j), "Party Advised:") + Len("Party Advised:"))
+            Else
+                ' Assume the first line is the company name
+                If companyName = "" Then
+                    companyName = tempArray(j)
+                End If
+            End If
+            
+            ' When all parts are filled (company name, adviser role, party advised)
+            If companyName <> "" And adviserRole <> "" And partyAdvised <> "" Then
+                ' Output to the same row, but next columns (B, C, D...)
+                Cells(i, colIndex).Value = companyName
+                Cells(i, colIndex + 1).Value = adviserRole
+                Cells(i, colIndex + 2).Value = partyAdvised
+                
+                ' Move to the next set of columns for the next segment
+                colIndex = colIndex + 3 ' 3 columns per segment
+                companyName = ""
+                adviserRole = ""
+                partyAdvised = ""
+            End If
+        Next j
+        
+        ' Reset colIndex to 2 for the next row of data (in case it's needed)
+        colIndex = 2
+    Next i
+    
+    MsgBox "Data split successfully!"
+End Sub
