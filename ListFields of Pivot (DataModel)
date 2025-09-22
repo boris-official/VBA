@@ -1,0 +1,42 @@
+Sub ListPivotFields()
+    Dim pt As PivotTable
+    Dim pf As PivotField
+    Dim cf As CubeField
+    Dim ws As Worksheet
+    Dim i As Long
+    
+    ' Change sheet/pivot name if needed
+    Set pt = Sheets("MarketShare").PivotTables("PivotTable1")
+    
+    ' Create a new sheet to dump names
+    On Error Resume Next
+    Set ws = Sheets("PivotField_List")
+    If ws Is Nothing Then
+        Set ws = Sheets.Add
+        ws.Name = "PivotField_List"
+    End If
+    ws.Cells.Clear
+    On Error GoTo 0
+    
+    i = 1
+    ws.Cells(i, 1).Value = "PivotFields"
+    i = i + 1
+    
+    ' List PivotFields
+    For Each pf In pt.PivotFields
+        ws.Cells(i, 1).Value = pf.Name
+        i = i + 1
+    Next pf
+    
+    i = i + 1
+    ws.Cells(i, 1).Value = "CubeFields"
+    i = i + 1
+    
+    ' List CubeFields (important for OLAP pivots / Data Model)
+    For Each cf In pt.CubeFields
+        ws.Cells(i, 1).Value = cf.Name
+        i = i + 1
+    Next cf
+    
+    MsgBox "Field names listed on sheet: PivotField_List"
+End Su
